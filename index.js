@@ -1,0 +1,16 @@
+const express = require("express");
+const app = express();
+const cors = require("cors");
+const http = require("http");
+const port = process.env.port || 3000;
+const bodyParser = require("body-parser");
+
+app.use(cors());
+app.use(bodyParser.json());
+
+const userRoute = require("./api/routes/userRoute");
+
+app.use("/user", userRoute);
+
+const server = http.createServer(app);
+server.listen(port);
