@@ -1,3 +1,10 @@
+/**
+ * @author Sarthak Rakhra
+ */
+
+/**
+ * Imports
+ */
 const express = require("express");
 const router = express.Router();
 const { userData } = require("../models/userModel");
@@ -6,8 +13,12 @@ const client = require("./../../db");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-client.connect();
+client.connect(); //Connect client to database
 
+/**
+ *
+ * This get route is used to retrieve all the users from the database
+ */
 router.get("/", (req, res) => {
   client.query("SELECT * FROM users", (err, result) => {
     if (err) {
@@ -19,9 +30,14 @@ router.get("/", (req, res) => {
   });
 });
 
+/**
+ *
+ * This post route is used to login the user to the system.
+ */
 router.post("/login", (req, res) => {
-  const { username, password } = req.body;
+  const { username, password } = req.body; // get usernam and password from the request
 
+  // if username or password is missing or not valid then we return a status 400
   if (username.trim() === "" || password.trim() === "") {
     return res
       .status(400)
@@ -40,6 +56,7 @@ router.post("/login", (req, res) => {
 
           const userFromDb = result.rows[0];
 
+          // use bcrypt to compare if the password from input matches the password with password of the user from the database
           bcrypt.compare(password, userFromDb.userpassword, function (
             err,
             result
@@ -56,11 +73,16 @@ router.post("/login", (req, res) => {
   }
 });
 
+/**
+ * This post route is used to change the password of a user
+ */
 router.post("/changePassword", (req, res) => {
-  const { password, confirmPassword, userid } = req.body;
+  const { password, confirmPassword, userid } = req.body; // getting data from the request body
+
   if (!userid) {
     return res.status(400).json({ message: "Please provide the userid" });
   }
+
   if (
     !password ||
     !confirmPassword ||
@@ -77,6 +99,7 @@ router.post("/changePassword", (req, res) => {
       });
     }
 
+    // using bcrypt to hash the password sent by the user
     bcrypt.hash(password, saltRounds, function (err, hash) {
       client.query(
         "UPDATE users SET userpassword = $1 WHERE userid = $2",
@@ -101,8 +124,14 @@ router.post("/changePassword", (req, res) => {
   }
 });
 
+/**
+ *
+ * Get route used to search a user by their userid
+ *
+ */
 router.get("/searchUser/:uuid", (req, res) => {
   const userId = req.params.uuid;
+
   client.query(
     "SELECT * FROM users WHERE userid = $1",
     [userId],
@@ -124,9 +153,9 @@ router.get("/searchUser/:uuid", (req, res) => {
   );
 });
 
-//post route to add new user
+//post route to register a new user
 router.post("/register", (req, res) => {
-  const { username, email, password, info } = req.body;
+  const { username, email, password, info } = req.body; // get data from request body
 
   if (
     username.trim() === "" ||
@@ -141,8 +170,8 @@ router.post("/register", (req, res) => {
         "Please make sure all data required is sent and in a valid format",
     });
   } else {
+    // Using bcrypt to hash the password user wants
     bcrypt.hash(password, saltRounds, function (err, hash) {
-      // Store hash in your password DB.
       client.query(
         "INSERT INTO users (userid, username, useremail, userpassword, userinfo, userdate) VALUES ($1, $2, $3, $4, $5, $6)",
         [uuidv4(), username, email, hash, info, new Date()],
@@ -168,7 +197,11 @@ router.post("/register", (req, res) => {
   }
 });
 
-// // put route to update/modify a user
+/**
+ * Put route used to update a users information.
+ *
+ * This method can accept 1 or more of the fields inside the `editableFields` array
+ */
 router.put("/updateUserInfo", async (req, res) => {
   if (!req.body.userid) {
     res.status(400).json({
@@ -181,30 +214,34 @@ router.put("/updateUserInfo", async (req, res) => {
     let querySetVariables = [];
     let i = 1;
 
+    // This for loop checks which editable fields the user wants to update
     for (const field in req.body) {
+      // If there is no userid passed we send back a status code 400
       if (!editableFields.includes(field) && field != "userid") {
         return res
           .status(400)
           .json({ message: "Bad request to edit an uneditable field" });
       } else if (req.body[field].trim === "" || !req.body[field]) {
+        // validating that input sent are not empty
         return res.status(400).json({
           message: "Please provide valid strings as parameters",
         });
       } else {
         if (field == "userid") continue;
+        // validate email
         if (field == "useremail" && !validateEmail(req.body[field])) {
           return res.status(400).json({
             message: "Please provide a valid email",
           });
         } else {
-          const comma = i === Object.keys(req.body).length - 1 ? "" : ",";
-          querySetString += `${field} = $${i++}${comma} `;
-          querySetVariables.push(req.body[field]);
+          const comma = i === Object.keys(req.body).length - 1 ? "" : ","; // if the current iteration is the last iteration in the loop we do not add a comma for the SET query
+          querySetString += `${field} = $${i++}${comma} `; // `$field name = value from request body `
+          querySetVariables.push(req.body[field]); // Adding variables for the query later on
         }
       }
     }
 
-    querySetVariables.push(req.body.userid);
+    querySetVariables.push(req.body.userid); // Add the userid for the WHERE condition
 
     client.query(
       `UPDATE users SET ${querySetString} WHERE userid = $${i}`,
