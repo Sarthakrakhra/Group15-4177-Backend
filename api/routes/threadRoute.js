@@ -17,34 +17,34 @@ const verifyUser = () => {
 //Get the thread info and all comments in the thread
 router.get("/:threadid", async (req, res) => {
 	var threadid = req.params.threadid;
-  //Get thread info
-  var thread;
-  try {
-  	thread = await client.query("SELECT threadid, threadforum, threaduser, username, threadtitle, threadtext, threaddate FROM threads JOIN users ON (threaduser = userid) WHERE threadid = $1",[threadid]);
-  } catch (err) {
-  	return res.status(500).json({message:err.message});
-  }
-  thread = thread.rows;
-  if (!thread[0]) {
-  	return res.status(404).json({message:"This thread does not exist"});
-  }
-  thread = thread[0];
-  //Get user
-  var userid = verifyUser();
-  //Check if user can view thread
-  var forum;
-  try {
-  	forum = await client.query("SELECT * FROM forums WHERE forumid = $1",[thread.threadforum]);
-  } catch (err) {
-  	return res.status(500).json({message:err.message});
-  }
-  forum = forum.rows;
-  if (!forum[0]) {
-  	return res.status(404).json({message:"This forum does not exist"});
-  }
-  forum = forum[0];
-  if (forum.forumprivacy != "public") {
-  	var membership;
+	//Get thread info
+	var thread;
+	try {
+		thread = await client.query("SELECT threadid, threadforum, threaduser, username, threadtitle, threadtext, threaddate FROM threads JOIN users ON (threaduser = userid) WHERE threadid = $1",[threadid]);
+	} catch (err) {
+		return res.status(500).json({message:err.message});
+	}
+	thread = thread.rows;
+	if (!thread[0]) {
+		return res.status(404).json({message:"This thread does not exist"});
+	}
+	thread = thread[0];
+	//Get user
+	var userid = verifyUser();
+	//Check if user can view thread
+	var forum;
+	try {
+		forum = await client.query("SELECT * FROM forums WHERE forumid = $1",[thread.threadforum]);
+	} catch (err) {
+		return res.status(500).json({message:err.message});
+	}
+	forum = forum.rows;
+	if (!forum[0]) {
+		return res.status(404).json({message:"This forum does not exist"});
+	}
+	forum = forum[0];
+	if (forum.forumprivacy != "public") {
+		var membership;
 		try {
 			membership = await client.query("SELECT * FROM memberships WHERE memberforum = $1 AND memberuser = $2",[thread.threadforum, userid]);
 		} catch (err) {
@@ -53,17 +53,17 @@ router.get("/:threadid", async (req, res) => {
 		if (!membership[0] || membership[0].memberrole == 0) {
 			return res.status(401).json({message:`You must be a member of ${forum.forumname} to view this thread`});
 		}
-  }
-  //Get comments
-  var comments;
-  try {
-  	comments = await client.query("SELECT userid, username, commentid, commenttext, commentlikes, commentdate FROM comments JOIN users ON (commentuser = userid) WHERE commentthread = $1",[threadid]);
-  } catch (err) {
-  	return res.status(500).json({message:err.message});
-  }
-  comments = comments.rows;
-  //Return
-  return res.status(200).json({"thread":thread, "comments":comments});
+	}
+	//Get comments
+	var comments;
+	try {
+		comments = await client.query("SELECT userid, username, commentid, commenttext, commentlikes, commentdate FROM comments JOIN users ON (commentuser = userid) WHERE commentthread = $1",[threadid]);
+	} catch (err) {
+		return res.status(500).json({message:err.message});
+	}
+	comments = comments.rows;
+	//Return
+	return res.status(200).json({"thread":thread, "comments":comments});
 });
 
 
@@ -155,16 +155,16 @@ router.put("/:threadid", async (req, res) => {
 	}
 	//Get thread info
 	var thread;
-  try {
-  	thread = await client.query("SELECT threaduser FROM threads WHERE threadid = $1",[threadid]);
-  } catch (err) {
-  	return res.status(500).json({message:err.message});
-  }
-  thread = thread.rows;
-  if (!thread[0]) {
-  	return res.status(404).json({message:"This thread does not exist"});
-  }
-  thread = thread[0];
+	try {
+		thread = await client.query("SELECT threaduser FROM threads WHERE threadid = $1",[threadid]);
+	} catch (err) {
+		return res.status(500).json({message:err.message});
+	}
+	thread = thread.rows;
+	if (!thread[0]) {
+		return res.status(404).json({message:"This thread does not exist"});
+	}
+	thread = thread[0];
 	//Did user create thread?
 	if (thread.threaduser != userid) {
 		return res.status(401).json({message:"You did not create this thread"});
@@ -189,16 +189,16 @@ router.delete("/:threadid", async (req, res) => {
 	}
 	//Get thread info
 	var thread;
-  try {
-  	thread = await client.query("SELECT threaduser FROM threads WHERE threadid = $1",[threadid]);
-  } catch (err) {
-  	return res.status(500).json({message:err.message});
-  }
-  thread = thread.rows;
-  if (!thread[0]) {
-  	return res.status(404).json({message:"This thread does not exist"});
-  }
-  thread = thread[0];
+	try {
+		thread = await client.query("SELECT threaduser FROM threads WHERE threadid = $1",[threadid]);
+	} catch (err) {
+		return res.status(500).json({message:err.message});
+	}
+	thread = thread.rows;
+	if (!thread[0]) {
+		return res.status(404).json({message:"This thread does not exist"});
+	}
+	thread = thread[0];
 	//Did user create thread?
 	if (thread.threaduser != userid) {
 		return res.status(401).json({message:"You did not create this thread"});
@@ -228,16 +228,16 @@ router.put("/comment/:commentid", async (req, res) => {
 	}
 	//Get comment info
 	var comment;
-  try {
-  	comment = await client.query("SELECT commentuser FROM comments WHERE commentid = $1",[commentid]);
-  } catch (err) {
-  	return res.status(500).json({message:err.message});
-  }
-  comment = comment.rows;
-  if (!comment[0]) {
-  	return res.status(404).json({message:"This comment does not exist"});
-  }
-  comment = comment[0];
+	try {
+		comment = await client.query("SELECT commentuser FROM comments WHERE commentid = $1",[commentid]);
+	} catch (err) {
+		return res.status(500).json({message:err.message});
+	}
+	comment = comment.rows;
+	if (!comment[0]) {
+		return res.status(404).json({message:"This comment does not exist"});
+	}
+	comment = comment[0];
 	//Did user create comment?
 	if (comment.commentuser != userid) {
 		return res.status(401).json({message:"You did not create this comment"});
@@ -262,16 +262,16 @@ router.delete("/comment/:commentid", async (req, res) => {
 	}
 	//Get comment info
 	var comment;
-  try {
-  	comment = await client.query("SELECT commentuser FROM comments WHERE commentid = $1",[commentid]);
-  } catch (err) {
-  	return res.status(500).json({message:err.message});
-  }
-  comment = comment.rows;
-  if (!comment[0]) {
-  	return res.status(404).json({message:"This comment does not exist"});
-  }
-  comment = comment[0];
+	try {
+		comment = await client.query("SELECT commentuser FROM comments WHERE commentid = $1",[commentid]);
+	} catch (err) {
+		return res.status(500).json({message:err.message});
+	}
+	comment = comment.rows;
+	if (!comment[0]) {
+		return res.status(404).json({message:"This comment does not exist"});
+	}
+	comment = comment[0];
 	//Did user create comment?
 	if (comment.commentuser != userid) {
 		return res.status(401).json({message:"You did not create this comment"});
