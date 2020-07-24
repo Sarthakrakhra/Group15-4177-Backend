@@ -1,4 +1,5 @@
 //Author: Sally Keating | B00739692
+
 var express = require('express');
 var app = express.Router();
 var fileUpload = require('express-fileupload');
@@ -13,6 +14,10 @@ app.post('/upload', (req, res) => {
     }
 
     var file = req.files.file;
+    //Move file? to public folder in frontend?
+    
+
+
 
     // const queryString = "";
     // connection.query(queryString, function(error, rows, fields){
