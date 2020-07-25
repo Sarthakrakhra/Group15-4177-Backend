@@ -1,5 +1,20 @@
 # Backend for Group project
 
+## Files created for the assignment
+- index.js
+  - Authors: Sarthak Rakhra, Lauchlan Toal, Sally Keating, Skyler Boutilier
+- db.js
+  - Authors: Sarthak Rakhra
+- verifyUser.js
+  - Authors: Lauchlan Toal
+- forumRoute.js
+  - Authors: Lauchlan Toal
+- threadRoute.js
+  - Authors: Lauchlan Toal
+- userRoute.js
+  - Authors: Sarthak Rakhra and Lauchlan Toal
+
+
 ## Running the server
 
 ### Running the server locally
