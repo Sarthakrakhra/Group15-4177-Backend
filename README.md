@@ -15,6 +15,8 @@ API calls can be made to the endpoint: https://a4-4177-g15.herokuapp.com/
   - Authors: Lauchlan Toal
 - userRoute.js
   - Authors: Sarthak Rakhra and Lauchlan Toal
+- mediauploadRoute.js, and on the front-end [MediaUpload.js](https://github.com/Sarthakrakhra/4177Group15Project/blob/master/src/Components/MediaUpload.js)
+  - Authors: Sally Keating
 
 
 ## Running the server
@@ -50,3 +52,11 @@ _Completed by Sarthak Rakhra_
   - `userid` must be passed or an error will be thrown
 - Logout a user - `/user/logout`
   - Request header should contain users unique cookie value
+
+
+### Media Uploding Feature
+
+_Completed by Sally Keating_
+
+- With this feature it is extremely important to ensure users find the process intuitive. Therefore, I used basic methods and realiable UI to ensure the task is straight forward. 
+- I created this feature using 
