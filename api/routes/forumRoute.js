@@ -11,7 +11,7 @@ const verifyUser = userCookies.verifyUser;
 router.get("/", async (req, res) => {
 	var forums;
 	try {
-		forums = await client.query("SELECT (forumid, forumname, foruminfo) FROM forums WHERE forumprivacy = 'public' ORDER BY forumname DESC", []);
+		forums = await client.query("SELECT forumid, forumname, foruminfo FROM forums WHERE forumprivacy = 'public' ORDER BY forumname DESC", []);
 	} catch (err) {
 		return res.status(500).json({message: err.message});
 	}
@@ -34,7 +34,7 @@ router.get("/user", async (req, res) => {
 	//Get all user's forums
 	var forums;
 	try {
-		forums = await client.query("SELECT (forumid, forumname, foruminfo) FROM forums JOIN memberships ON (forumid = memberforum) WHERE memberuser = $1 AND memberrole > 1",[userid]);
+		forums = await client.query("SELECT forumid, forumname, foruminfo FROM forums JOIN memberships ON (forumid = memberforum) WHERE memberuser = $1 AND memberrole > 1",[userid]);
 	} catch (err) {
 		return res.status(500).json({message: err.message});
 	}
