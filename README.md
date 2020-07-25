@@ -1,5 +1,7 @@
 # Backend for Group project
 
+API calls can be made to the endpoint: https://a4-4177-g15.herokuapp.com/ 
+
 ## Files created for the assignment
 - index.js
   - Authors: Sarthak Rakhra, Lauchlan Toal, Sally Keating, Skyler Boutilier
