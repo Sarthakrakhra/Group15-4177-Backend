@@ -6,16 +6,23 @@ var fileUpload = require('express-fileupload');
 
 app.use(fileUpload());
 
-app.post('/upload', (req, res) => {
-    console.log(req.files.fileToUpload);
+//posts data to the api path
+app.post("/upload", (request, result) => {
+    console.log(request.files.fileToUpload);
 
-    if(req.files === null){
-        console.log("No file uploaded");
+    if(request.files === null){
+        console.log("No file uploaded ");
     }
 
-    var file = req.files.file;
-    //Move file? to public folder in frontend?
+    const media = request.files.file;
 
+    media.mv(`../../public/uploadedMedia/${media.name}`, error => {
+        if (error){
+            console.log('an error arose when attempting to store the file ' + error);
+            result.status(500).send(error);
+        }
+        result.json({mediaTitle: media.name, filePath: `/uploadedMedia/${media.name}`})
+    });
 });
 
 module.exports = app;
