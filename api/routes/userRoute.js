@@ -12,6 +12,8 @@ const { v4: uuidv4 } = require("uuid"); // used to create the uuid
 const client = require("./../../db");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+const userCookies = require("./../controllers/verifyUser");
+const getCookieId = userCookies.getCookieId;
 
 client.connect(); //Connect client to database
 
@@ -278,6 +280,24 @@ router.put("/updateUserInfo", async (req, res) => {
       }
     );
   }
+});
+
+router.get("/logout", async (req, res) => {
+	var cookieid;
+	try {
+		cookieid = await getCookieId(req.headers.cookie);
+	} catch (err) {
+		cookieid = null;
+	}
+	if (!cookieid) {
+		return res.status(401).json({message:"You must be logged in to log out"});
+	}
+	try {
+		await client.query("DELETE FROM cookies WHERE cookieid = $1",[cookieid]);
+		return res.cookie("usersession", "", {maxAge: 86400}).status(200).json({message: "Logout successful!"});
+	} catch (err) {
+		return res.status(500).json({message:err.message});
+	}
 });
 
 /**
