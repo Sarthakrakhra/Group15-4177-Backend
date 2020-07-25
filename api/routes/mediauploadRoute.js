@@ -15,17 +15,7 @@ app.post('/upload', (req, res) => {
 
     var file = req.files.file;
     //Move file? to public folder in frontend?
-    
 
-
-
-    // const queryString = "";
-    // connection.query(queryString, function(error, rows, fields){
-    //     if (error){
-    //         console.log(error);
-    //     }
-    //     res.json(rows);
-    // });
 });
 
 module.exports = app;
