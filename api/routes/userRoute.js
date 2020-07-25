@@ -44,7 +44,7 @@ router.post("/login", (req, res) => {
       .json({ message: "Please provide non-empty username and password" });
   } else {
     client.query(
-      "SELECT username, userpassword FROM users WHERE username = $1",
+      "SELECT userid, userpassword FROM users WHERE username = $1",
       [username],
       (err, result) => {
         if (err) {
@@ -62,10 +62,17 @@ router.post("/login", (req, res) => {
             result
           ) {
             if (result) {
-              return res.status(200).json({ loggedIn: result });
+            	var generatedCookie = uuidv4();
+            	client.query("INSERT INTO cookies VALUES ($1, $2, NOW())",[generatedCookie, userFromDb.userid], (err, result) => {
+              	if (err) {
+              		return res.status(500).json({ message: err.message });
+              	} else {
+              		return res.cookie("usersession", generatedCookie, {maxAge: 86400}).status(200).json({ loggedIn: true });
+              	}
+              });
+            } else {
+            	return res.status(401).json({ loggedIn: result });
             }
-
-            return res.status(401).json({ loggedIn: result });
           });
         }
       }
@@ -172,9 +179,10 @@ router.post("/register", (req, res) => {
   } else {
     // Using bcrypt to hash the password user wants
     bcrypt.hash(password, saltRounds, function (err, hash) {
+    	var userId = uuidv4();
       client.query(
         "INSERT INTO users (userid, username, useremail, userpassword, userinfo, userdate) VALUES ($1, $2, $3, $4, $5, $6)",
-        [uuidv4(), username, email, hash, info, new Date()],
+        [userId, username, email, hash, info, new Date()],
         (err, result) => {
           if (err) {
             return res.status(500).json({
@@ -186,8 +194,15 @@ router.post("/register", (req, res) => {
                 message: "User could not be added",
               });
             } else {
-              return res.status(200).json({
+            	var generatedCookie = uuidv4();
+            	client.query("INSERT INTO cookies VALUES ($1, $2, NOW())",[generatedCookie, userId], (err, result) => {
+              	if (err) {
+              		return res.status(500).json({ message: err.message });
+              	} else {
+              		return res.cookie("usersession", generatedCookie, {maxAge: 86400}).status(200).json({
                 message: `User added!`,
+              });
+              	}
               });
             }
           }
