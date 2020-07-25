@@ -4,15 +4,8 @@
 const express = require("express");
 const router = express.Router();
 const client = require("./../../db");
-
-//Create database connection (not needed since userRoute does it)
-//client.connect(); 
-
-//Function to get the user id of the requesting user
-//Currently a stub that just has a hardcoded user, must fix
-const verifyUser = () => {
-	return "8751eef8-af7a-4edc-8dc7-3dc2d705cede";
-};
+const userCookies = require("./../controllers/verifyUser"); 
+const verifyUser = userCookies.verifyUser;
 
 //Get the thread info and all comments in the thread
 router.get("/:threadid", async (req, res) => {
@@ -30,7 +23,12 @@ router.get("/:threadid", async (req, res) => {
 	}
 	thread = thread[0];
 	//Get user
-	var userid = verifyUser();
+	var userid;
+	try {
+		userid = await verifyUser(req.headers.cookie);
+	} catch (err) {
+		userid = null;
+	}
 	//Check if user can view thread
 	var forum;
 	try {
@@ -43,7 +41,7 @@ router.get("/:threadid", async (req, res) => {
 		return res.status(404).json({message:"This forum does not exist"});
 	}
 	forum = forum[0];
-	if (forum.forumprivacy != "public") {
+	if (forum.forumprivacy != "public" && userid != null) {
 		var membership;
 		try {
 			membership = await client.query("SELECT * FROM memberships WHERE memberforum = $1 AND memberuser = $2",[thread.threadforum, userid]);
@@ -70,7 +68,12 @@ router.get("/:threadid", async (req, res) => {
 //Post a new thread
 router.post("/", async (req, res) => {
 	//Get user
-	var userid = verifyUser();
+	var userid;
+	try {
+		userid = await verifyUser(req.headers.cookie);
+	} catch (err) {
+		userid = null;
+	}
 	if (!userid) {
 		return res.status(401).json({message:"You must be logged in to post new threads"});
 	}
@@ -107,7 +110,12 @@ router.post("/", async (req, res) => {
 router.post("/:threadid", async (req, res) => {
 	var threadid = req.params.threadid;
 	//Get user
-	var userid = verifyUser();
+	var userid;
+	try {
+		userid = await verifyUser(req.headers.cookie);
+	} catch (err) {
+		userid = null;
+	}
 	if (!userid) {
 		return res.status(401).json({message:"You must be logged in to post new comments"});
 	}
@@ -141,7 +149,12 @@ router.post("/:threadid", async (req, res) => {
 router.put("/:threadid", async (req, res) => {
 	var threadid = req.params.threadid;
 	//Get user
-	var userid = verifyUser();
+	var userid;
+	try {
+		userid = await verifyUser(req.headers.cookie);
+	} catch (err) {
+		userid = null;
+	}
 	if (!userid) {
 		return res.status(401).json({message:"You must be logged in to update threads"});
 	}
@@ -183,7 +196,12 @@ router.put("/:threadid", async (req, res) => {
 router.delete("/:threadid", async (req, res) => {
 	var threadid = req.params.threadid;
 	//Get user
-	var userid = verifyUser();
+	var userid;
+	try {
+		userid = await verifyUser(req.headers.cookie);
+	} catch (err) {
+		userid = null;
+	}
 	if (!userid) {
 		return res.status(401).json({message:"You must be logged in to delete threads"});
 	}
@@ -217,7 +235,12 @@ router.delete("/:threadid", async (req, res) => {
 router.put("/comment/:commentid", async (req, res) => {
 	var commentid = req.params.commentid;
 	//Get user
-	var userid = verifyUser();
+	var userid;
+	try {
+		userid = await verifyUser(req.headers.cookie);
+	} catch (err) {
+		userid = null;
+	}
 	if (!userid) {
 		return res.status(401).json({message:"You must be logged in to update comments"});
 	}
@@ -256,7 +279,12 @@ router.put("/comment/:commentid", async (req, res) => {
 router.delete("/comment/:commentid", async (req, res) => {
 	var commentid = req.params.commentid;
 	//Get user
-	var userid = verifyUser();
+	var userid;
+	try {
+		userid = await verifyUser(req.headers.cookie);
+	} catch (err) {
+		userid = null;
+	}
 	if (!userid) {
 		return res.status(401).json({message:"You must be logged in to delete comments"});
 	}
