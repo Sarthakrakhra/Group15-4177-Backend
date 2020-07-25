@@ -1,3 +1,6 @@
+/**
+ * @author Sarthak Rakhra
+ */
 const { Client } = require("pg");
 
 const client = new Client({
