@@ -15,6 +15,8 @@ npm run development
 
 ### Authentication feature
 
+_Completed by Sarthak Rakhra_
+
 - See all the users - `/user` using GET
 - Login a user - `/user/login` using POST
   - Body should contain parameters in a JSON with the format: `{"username": "Some name", "password": "some password"}`
