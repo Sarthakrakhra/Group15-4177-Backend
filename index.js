@@ -1,8 +1,12 @@
+/**
+ * @author Sarthak Rakhra, Lauchlan Toal, Sally Keating, Skyler Boutilier
+ */
+
 const express = require("express");
 const app = express();
 const cors = require("cors");
 const http = require("http");
-const port = process.env.PORT || 3000;
+
 const bodyParser = require("body-parser");
 
 
@@ -17,5 +21,14 @@ app.use("/user", userRoute);
 app.use("/thread", threadRoute);
 app.use("/upload", mediaUploadRoute);
 
+const forumRoute = require("./api/routes/forumRoute");
+app.use("/forum", forumRoute);
+
+app.use((req, res, next) => {
+  res.send({ Message: "it works!" });
+});
+
+const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 server.listen(port);
+console.log(`Listening on port ${port}`);
