@@ -59,4 +59,5 @@ _Completed by Sarthak Rakhra_
 _Completed by Sally Keating_
 
 - With this feature it is extremely important to ensure users find the process intuitive. Therefore, I used basic methods and realiable UI to ensure the task is straight forward. 
-- I created this feature using 
+- I created this feature using both front and back-end as the user will have to upload a file to the front-end and then it will be stored on the backend. 
+- This process can be seen by navigating to `/upload`
