@@ -1,3 +1,7 @@
+/**
+ * @author Sarthak Rakhra, Lauchlan Toal, Sally Keating, Skyler Boutilier
+ */
+
 const express = require("express");
 const app = express();
 const cors = require("cors");
