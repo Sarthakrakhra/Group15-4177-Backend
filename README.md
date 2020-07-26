@@ -17,6 +17,8 @@ API calls can be made to the endpoint: https://a4-4177-g15.herokuapp.com/
   - Authors: Sarthak Rakhra and Lauchlan Toal
 - mediauploadRoute.js, and on the front-end [MediaUpload.js](https://github.com/Sarthakrakhra/4177Group15Project/blob/master/src/Components/MediaUpload.js)
   - Authors: Sally Keating
+- searchRoute.js
+  - Authors: Skyler Boutilier
 
 
 ## Running the server
