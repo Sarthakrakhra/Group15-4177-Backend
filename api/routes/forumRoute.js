@@ -1,5 +1,5 @@
 // @author Lauchlan Toal
-// Endpoints for viewing/posting/editing/deleting threads and comments
+// Endpoints for viewing forums
 
 //Import necessary dependencies
 const express = require("express");
