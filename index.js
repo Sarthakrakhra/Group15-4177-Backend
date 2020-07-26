@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 const userRoute = require("./api/routes/userRoute");
 const threadRoute = require("./api/routes/threadRoute");
 const mediaUploadRoute = require("./api/routes/mediauploadRoute");
+
 const searchRoute = require("./api/routes/searchRoute");
 
 app.use("/user", userRoute);
