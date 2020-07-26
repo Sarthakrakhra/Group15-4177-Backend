@@ -1,4 +1,5 @@
 // @author Lauchlan Toal
+// Endpoints for viewing/editing/creating/deleting threads and comments
 
 //Import necessary dependencies
 const express = require("express");
@@ -41,6 +42,7 @@ router.get("/:threadid", async (req, res) => {
 		return res.status(404).json({message:"This forum does not exist"});
 	}
 	forum = forum[0];
+	//If forum is private, check if user has permission to view it
 	if (forum.forumprivacy != "public" && userid != null) {
 		var membership;
 		try {
@@ -51,6 +53,9 @@ router.get("/:threadid", async (req, res) => {
 		if (!membership[0] || membership[0].memberrole == 0) {
 			return res.status(401).json({message:`You must be a member of ${forum.forumname} to view this thread`});
 		}
+	} 
+	if (forum.forumprivacy != "public" && userid == null) {
+		return res.status(401).json({message:`You must be a member of ${forum.forumname} to view this thread`});
 	}
 	//Get comments
 	var comments;
