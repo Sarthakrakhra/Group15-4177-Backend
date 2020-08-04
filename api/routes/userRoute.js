@@ -13,23 +13,10 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const userCookies = require("./../controllers/verifyUser");
 const getCookieId = userCookies.getCookieId;
+const verifyUser = userCookies.verifyUser;
 
 client.connect(); //Connect client to database
 
-/**
- *
- * This get route is used to retrieve all the users from the database
- */
-router.get("/", (req, res) => {
-  client.query("SELECT * FROM users", (err, result) => {
-    if (err) {
-      return res.status(400).json({ message: err.message });
-    } else {
-      return res.status(200).json(result.rows);
-      // client.end();
-    }
-  });
-});
 
 /**
  *
@@ -71,15 +58,12 @@ router.post("/login", (req, res) => {
                   if (err) {
                     return res.status(500).json({ message: err.message });
                   } else {
-                    return res
-                      .cookie("usersession", generatedCookie, { maxAge: 86400 })
-                      .status(200)
-                      .json({ loggedIn: true });
+                    return res.status(200).json({ loggedIn: true, cookie: generatedCookie });
                   }
                 }
               );
             } else {
-              return res.status(401).json({ loggedIn: result });
+              return res.status(401).json({ loggedIn: false });
             }
           });
         }
@@ -92,8 +76,23 @@ router.post("/login", (req, res) => {
  * This post route is used to change the password of a user
  */
 router.post("/changePassword", (req, res) => {
-  const { password, confirmPassword, userid } = req.body; // getting data from the request body
 
+  const { password, confirmPassword, userid } = req.body.data; // getting data from the request body
+  var authuser;
+  try {
+   authuser = await verifyUser(req.body.cookie);
+  } catch (err) {
+  	authuser = null;
+  }
+  
+  if (authuser == null) {
+  	return res.status(401).json({message:"You must be logged in to change your password"});
+  }
+	if (authuser != userid) {
+		return res.status(401).json({message:"You are not logged in as this user"});
+	}
+	
+	
   if (!userid) {
     return res.status(400).json({ message: "Please provide the userid" });
   }
@@ -148,7 +147,7 @@ router.get("/searchUser/:uuid", (req, res) => {
   const userId = req.params.uuid;
 
   client.query(
-    "SELECT * FROM users WHERE userid = $1",
+    "SELECT (userid, username, userinfo, userdate) FROM users WHERE userid = $1",
     [userId],
     (err, result) => {
       if (err) {
@@ -157,11 +156,11 @@ router.get("/searchUser/:uuid", (req, res) => {
         });
       } else {
         if (result.rowCount !== 1) {
-          return res.status(400).json({
+          return res.status(404).json({
             message: `No results found with the specified user id ${userId}`,
           });
         } else {
-          return res.status(200).json(result.rows);
+          return res.status(200).json(result.rows[0]);
         }
       }
     }
@@ -210,12 +209,7 @@ router.post("/register", (req, res) => {
                   if (err) {
                     return res.status(500).json({ message: err.message });
                   } else {
-                    return res
-                      .cookie("usersession", generatedCookie, { maxAge: 86400 })
-                      .status(200)
-                      .json({
-                        message: `User added!`,
-                      });
+                  	return res.status(200).json({ message: "User added!", cookie: generatedCookie });
                   }
                 }
               );
@@ -233,11 +227,26 @@ router.post("/register", (req, res) => {
  * This method can accept 1 or more of the fields inside the `editableFields` array
  */
 router.put("/updateUserInfo", async (req, res) => {
+	if (!req.body.cookie) {
+		return res.status(400).json({message: "You must be logged in to edit users"});
+	}
+	var authuser;
+	try {
+		authuser = await verifyUser(req.body.cookie);
+	} catch (err) {
+		authuser = null;
+	}
+	if (authuser == null) {
+		return res.status(400).json({message: "You must be logged in to edit users"});
+	}
   if (!req.body.userid) {
-    res.status(400).json({
+    return res.status(400).json({
       message: "Please provide the uuid of the user",
     });
   } else {
+  	if (authuser != req.body.userid) {
+  		return res.status(400).json({message: "You must log in as the user to update"});
+  	}
     const editableFields = ["username", "useremail", "userinfo"];
 
     let querySetString = "";
@@ -298,7 +307,7 @@ router.put("/updateUserInfo", async (req, res) => {
 router.get("/logout", async (req, res) => {
   var cookieid;
   try {
-    cookieid = await getCookieId(req.headers.cookie);
+    cookieid = await getCookieId(req.body.cookie);
   } catch (err) {
     cookieid = null;
   }
@@ -309,10 +318,7 @@ router.get("/logout", async (req, res) => {
   }
   try {
     await client.query("DELETE FROM cookies WHERE cookieid = $1", [cookieid]);
-    return res
-      .cookie("usersession", "", { maxAge: 86400 })
-      .status(200)
-      .json({ message: "Logout successful!" });
+    return res.status(200).json({ message: "Logout successful!" });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

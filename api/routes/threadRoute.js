@@ -26,7 +26,7 @@ router.get("/:threadid", async (req, res) => {
 	//Get user
 	var userid;
 	try {
-		userid = await verifyUser(req.headers.cookie);
+		userid = await verifyUser(req.body.cookie);
 	} catch (err) {
 		userid = null;
 	}
@@ -75,7 +75,7 @@ router.post("/", async (req, res) => {
 	//Get user
 	var userid;
 	try {
-		userid = await verifyUser(req.headers.cookie);
+		userid = await verifyUser(req.body.cookie);
 	} catch (err) {
 		userid = null;
 	}
@@ -83,7 +83,12 @@ router.post("/", async (req, res) => {
 		return res.status(401).json({message:"You must be logged in to post new threads"});
 	}
 	//Verify that input values are reasonable
-	var data = req.body;
+	var data 
+	try {
+		data = req.body.data;
+	} catch (err) {
+		return res.status(400).json({message:"You must send data for the post"});
+	}
 	if (!(data.threadforum && data.threadtitle && data.threadtext)) {
 		return res.status(400).json({message:"You must send threadforum, threadtitle, and threadtext"});
 	}
@@ -117,7 +122,7 @@ router.post("/:threadid", async (req, res) => {
 	//Get user
 	var userid;
 	try {
-		userid = await verifyUser(req.headers.cookie);
+		userid = await verifyUser(req.body.cookie);
 	} catch (err) {
 		userid = null;
 	}
@@ -125,7 +130,12 @@ router.post("/:threadid", async (req, res) => {
 		return res.status(401).json({message:"You must be logged in to post new comments"});
 	}
 	//Verify that input values are reasonable
-	var data = req.body;
+	var data
+	try {
+		data = req.body.data;
+	} catch (err) {
+		return res.status(400).json({message:"You must send data for the comment"});
+	}
 	if (!(data.commenttext)) {
 		return res.status(400).json({message:"You must send commenttext"});
 	}
@@ -156,7 +166,7 @@ router.put("/:threadid", async (req, res) => {
 	//Get user
 	var userid;
 	try {
-		userid = await verifyUser(req.headers.cookie);
+		userid = await verifyUser(req.body.cookie);
 	} catch (err) {
 		userid = null;
 	}
@@ -164,7 +174,12 @@ router.put("/:threadid", async (req, res) => {
 		return res.status(401).json({message:"You must be logged in to update threads"});
 	}
 	//Verify that input values are reasonable
-	var data = req.body;
+	var data
+	try {
+		data = req.body.data;
+	catch (err) {
+		return res.status(400).json({message:"You must send data to update"});
+	}
 	if (!(data.threadtitle && data.threadtext)) {
 		return res.status(400).json({message:"You must send threadtitle and threadtext"});
 	}
@@ -203,7 +218,7 @@ router.delete("/:threadid", async (req, res) => {
 	//Get user
 	var userid;
 	try {
-		userid = await verifyUser(req.headers.cookie);
+		userid = await verifyUser(req.body.cookie);
 	} catch (err) {
 		userid = null;
 	}
@@ -242,7 +257,7 @@ router.put("/comment/:commentid", async (req, res) => {
 	//Get user
 	var userid;
 	try {
-		userid = await verifyUser(req.headers.cookie);
+		userid = await verifyUser(req.body.cookie);
 	} catch (err) {
 		userid = null;
 	}
@@ -250,7 +265,12 @@ router.put("/comment/:commentid", async (req, res) => {
 		return res.status(401).json({message:"You must be logged in to update comments"});
 	}
 	//Verify that input values are reasonable
-	var data = req.body;
+	var data;
+	try {
+		data = req.body.data;
+	} catch (err) {
+		return res.status(400).json({message:"You must send data to update"});
+	}
 	if (!(data.commenttext)) {
 		return res.status(400).json({message:"You must send commenttext"});
 	}
@@ -286,7 +306,7 @@ router.delete("/comment/:commentid", async (req, res) => {
 	//Get user
 	var userid;
 	try {
-		userid = await verifyUser(req.headers.cookie);
+		userid = await verifyUser(req.body.cookie);
 	} catch (err) {
 		userid = null;
 	}

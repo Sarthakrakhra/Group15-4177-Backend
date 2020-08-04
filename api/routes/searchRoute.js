@@ -17,9 +17,9 @@ const client = require("./../../db");
 router.post("/Search", (req, res) => {
     const { searchRequest } = req.body;
 
-  client.query("SELECT * FROM threads WHERE lower(threadtitle) LIKE lower($1) OR lower(threadtext) LIKE lower($1)", ["%" + searchRequest + "%"], (err, result) => {
+  client.query("SELECT threadid, threadforum, threaduser, threadtitle, threadtext, threaddate, threadflagged FROM threads JOIN forums ON (forumid = threadforum) WHERE forumprivacy = 'public' AND (lower(threadtitle) LIKE lower($1) OR lower(threadtext) LIKE lower($1))", ["%" + searchRequest + "%"], (err, result) => {
     if (err) {
-      return res.status(400).json({ message: err.message });
+      return res.status(500).json({ message: err.message });
     } else {
       return res.status(200).json(result.rows);
     }

@@ -6,20 +6,7 @@ const getCookieId = async (cookies) => {
 	if (!cookies) {
 		return null;
 	}
-	var allCookies = cookies.split(";");
-	var i = 0;
-	var userCookie = null;
-	while (i < allCookies.length) {
-		var currCookie = allCookies[i].trim();
-		if (currCookie.substring(0, 12) == "usersession=") {
-			userCookie = currCookie.split("=")[1];
-			break;
-		}
-	}
-	if (!userCookie) {
-		return null;
-	}
-	return userCookie;
+	return cookies;
 };
 
 //Call this with await verifyUser(req.headers.cookie)
@@ -28,6 +15,9 @@ const verifyUser = async (cookies) => {
 	try {
 		var userCookie = await getCookieId(cookies);
 	} catch (err) {
+		return null;
+	}
+	if (!userCookie) {
 		return null;
 	}
 	var cookieEntry;

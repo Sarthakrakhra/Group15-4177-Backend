@@ -3,11 +3,22 @@
 var express = require('express');
 var app = express.Router();
 var fileUpload = require('express-fileupload');
+const userCookies = require("./../controllers/verifyUser"); 
+const verifyUser = userCookies.verifyUser;
 
 app.use(fileUpload());
 
 //posts data to the api path
 app.post("/upload", (request, result) => {
+		var userid;
+		try {
+			userid = await verifyUser(request.body.cookie);
+		} catch (err) {
+			userid = null;
+		}
+		if (!userid) {
+			return result.status(401).json({"You must be logged in to post images"});
+		}
     console.log(request.files.fileToUpload);
 
     if(request.files === null){
