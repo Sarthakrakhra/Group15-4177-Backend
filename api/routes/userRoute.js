@@ -266,7 +266,7 @@ router.put("/updateUserInfo", async (req, res) => {
           message: "Please provide valid strings as parameters",
         });
       } else {
-        if (field == "userid") continue;
+        if (field == "userid" || field == "cookie") continue;
         // validate email
         if (field == "useremail" && !validateEmail(req.body[field])) {
           return res.status(400).json({
