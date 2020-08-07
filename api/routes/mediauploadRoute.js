@@ -9,7 +9,7 @@ const verifyUser = userCookies.verifyUser;
 app.use(fileUpload());
 
 //posts data to the api path
-app.post("/upload", (request, result) => {
+app.post("/upload", async (request, result) => {
 		var userid;
 		try {
 			userid = await verifyUser(request.body.cookie);
@@ -17,7 +17,7 @@ app.post("/upload", (request, result) => {
 			userid = null;
 		}
 		if (!userid) {
-			return result.status(401).json({"You must be logged in to post images"});
+			return result.status(401).send("You must be logged in to post images");
 		}
     console.log(request.files.fileToUpload);
 

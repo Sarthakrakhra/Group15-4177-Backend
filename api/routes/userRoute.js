@@ -75,7 +75,7 @@ router.post("/login", (req, res) => {
 /**
  * This post route is used to change the password of a user
  */
-router.post("/changePassword", (req, res) => {
+router.post("/changePassword", async (req, res) => {
 
   const { password, confirmPassword, userid } = req.body.data; // getting data from the request body
   var authuser;

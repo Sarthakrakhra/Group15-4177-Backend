@@ -18,11 +18,13 @@ const threadRoute = require("./api/routes/threadRoute");
 const mediaUploadRoute = require("./api/routes/mediauploadRoute");
 
 const searchRoute = require("./api/routes/searchRoute");
+const messagingRoute = require("./api/routes/messagingRoute");
 
 app.use("/user", userRoute);
 app.use("/thread", threadRoute);
 app.use("/upload", mediaUploadRoute);
 app.use("/search", searchRoute);
+app.use("/messaging", messagingRoute);
 
 const forumRoute = require("./api/routes/forumRoute");
 app.use("/forum", forumRoute);

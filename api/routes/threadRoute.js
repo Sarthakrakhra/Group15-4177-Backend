@@ -177,7 +177,7 @@ router.put("/:threadid", async (req, res) => {
 	var data
 	try {
 		data = req.body.data;
-	catch (err) {
+	} catch (err) {
 		return res.status(400).json({message:"You must send data to update"});
 	}
 	if (!(data.threadtitle && data.threadtext)) {
