@@ -113,7 +113,7 @@ router.post("/", async (req, res) => {
 	if (!req.body.data.name || !req.body.data.info || !req.body.data.privacy) {
 		return res.status(400).json({message:"You must send name, info, and privacy to create a forum"});
 	}
-	if (req.body.data.privacy != "public" || req.body.data.privacy != "private") {
+	if (req.body.data.privacy != "public" && req.body.data.privacy != "private") {
 		return res.status(400).json({message:"Privacy must be private or public"});
 	}
 	if (req.body.data.name.length > 255) {
@@ -123,7 +123,7 @@ router.post("/", async (req, res) => {
 	//Create forum
 	try {
 		await client.query("INSERT INTO forums (forumname, foruminfo, forumprivacy, forumdate, forumflagged) VALUES ($1, $2, $3, NOW(), 0)", [req.body.data.name, req.body.data.info, req.body.data.privacy]);
-		await client.query("INSERT INTO memberships (memberforum, memberuser, memberrole, memberdate) VALUES ((SELECT forumid FROM forums WHERE forumname = $1), $2, 5, NOW()", [req.body.data.name, userid]);
+		await client.query("INSERT INTO memberships (memberforum, memberuser, memberrole, memberdate) VALUES ((SELECT forumid FROM forums WHERE forumname = $1), $2, 5, NOW())", [req.body.data.name, userid]);
 	} catch (err) {
 		return res.status(500).json({message: err.message});
 	}
@@ -143,7 +143,7 @@ router.get("/join/:forumid", async (req, res) => {
 		userid = null;
 	}
 	if (!userid) {
-		return res.status(401).json({message:"You must be logged in to create a forum"});
+		return res.status(401).json({message:"You must be logged in to join a forum"});
 	}
 	//Verify forum exists
 	var forum;

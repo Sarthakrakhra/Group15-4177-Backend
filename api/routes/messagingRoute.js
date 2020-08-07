@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
 	//Get all conversations
 	var convos;
 	try {
-		convos = await client.query("SELECT convoid, convousera, convouserb, convoinfo, convodate, a.username AS usera, b.username AS userb FROM conversations JOIN users a ON (a.userid = convousera) JOIN users b ON (b.username = convouserb) WHERE convousera = $1 OR convouserb = $1", [userid]);
+		convos = await client.query("SELECT convoid, convousera, convouserb, convoinfo, convodate, a.username AS usera, b.username AS userb FROM conversations JOIN users a ON (a.userid = convousera) JOIN users b ON (b.userid = convouserb) WHERE convousera = $1 OR convouserb = $1", [userid]);
 	} catch (err) {
 		return res.status(500).json({message: err.message});
 	}
@@ -32,7 +32,7 @@ router.get("/", async (req, res) => {
 });
 
 //Get conversation between current user and another user
-router.get("/:user", async (req, res) => {
+router.get("/user/:user", async (req, res) => {
 	var otherid = req.params.user;
 	//Get user
 	var userid;
@@ -47,7 +47,7 @@ router.get("/:user", async (req, res) => {
 	//Get conversation
 	var convos;
 	try {
-		convos = await client.query("SELECT convoid, convousera, convouserb, convoinfo, convodate, a.username AS usera, b.username AS userb FROM conversations JOIN users a ON (a.userid = convousera) JOIN users b ON (b.username = convouserb) WHERE (convousera = $1 AND convouserb = $1) OR (convousera = $2 AND convouserb = $1)", [userid, otherid]);
+		convos = await client.query("SELECT convoid, convousera, convouserb, convoinfo, convodate, a.username AS usera, b.username AS userb FROM conversations JOIN users a ON (a.userid = convousera) JOIN users b ON (b.userid = convouserb) WHERE (convousera = $1 AND convouserb = $2) OR (convousera = $2 AND convouserb = $1)", [userid, otherid]);
 	} catch (err) {
 		return res.status(500).json({message: err.message});
 	}
@@ -74,16 +74,17 @@ router.get("/:convo", async (req, res) => {
 	//Get conversation
 	var convo;
 	try {
-		convo = await client.query("SELECT convoid, convousera, convouserb, convoinfo, convodate, a.username AS usera, b.username AS userb FROM conversations JOIN users a ON (a.userid = convousera) JOIN users b ON (b.username = convouserb) WHERE convoid = $1", [convoid]);
+		convo = await client.query("SELECT convoid, convousera, convouserb, convoinfo, convodate, a.username AS usera, b.username AS userb FROM conversations JOIN users a ON (a.userid = convousera) JOIN users b ON (b.userid = convouserb) WHERE convoid = $1", [convoid]);
 	} catch (err) {
 		return res.status(500).json({message: err.message});
 	}
 	convos = convo.rows;
-	if (!convo[0]) {
+	if (!convos[0]) {
 		return res.status(404).json({message:"No conversation found"});
 	}
+	convos = convos[0];
 	//For security, if user is not part of conversation don't even let them know it exists
-	if (convo.convousera != userid && convo.convouserb != userid) {
+	if (convos.convousera != userid && convos.convouserb != userid) {
 		return res.status(404).json({message:"No conversation found"});
 	}
 	//Get messages in conversation
@@ -93,11 +94,11 @@ router.get("/:convo", async (req, res) => {
 	} catch (err) {
 		return res.status(500).json({message: err.message});
 	}
-	return res.status(200).json(convos.rows);
+	return res.status(200).json({"convo":convos, "messages":messages.rows});
 });
 
 //Start a new conversation with a user
-router.post("/:user", async (req, res) => {
+router.post("/user/:user", async (req, res) => {
 	var otherid = req.params.user;
 	//Get user
 	var userid;

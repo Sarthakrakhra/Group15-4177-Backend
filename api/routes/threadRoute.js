@@ -14,7 +14,7 @@ router.get("/:threadid", async (req, res) => {
 	//Get thread info
 	var thread;
 	try {
-		thread = await client.query("SELECT threadid, threadforum, threaduser, username, threadtitle, threadtext, threaddate FROM threads JOIN users ON (threaduser = userid) WHERE threadid = $1",[threadid]);
+		thread = await client.query("SELECT threadid, threadforum, forumname, threaduser, username, threadtitle, threadtext, threaddate FROM threads JOIN users ON (threaduser = userid) JOIN forums ON (threadforum = forumid) WHERE threadid = $1",[threadid]);
 	} catch (err) {
 		return res.status(500).json({message:err.message});
 	}

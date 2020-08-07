@@ -147,7 +147,7 @@ router.get("/searchUser/:uuid", (req, res) => {
   const userId = req.params.uuid;
 
   client.query(
-    "SELECT (userid, username, userinfo, userdate) FROM users WHERE userid = $1",
+    "SELECT userid, username, userinfo, userdate FROM users WHERE userid = $1",
     [userId],
     (err, result) => {
       if (err) {
@@ -237,7 +237,7 @@ router.put("/updateUserInfo", async (req, res) => {
 		authuser = null;
 	}
 	if (authuser == null) {
-		return res.status(400).json({message: "You must be logged in to edit users"});
+		return res.status(401).json({message: "You must be logged in to edit users"});
 	}
   if (!req.body.userid) {
     return res.status(400).json({
@@ -245,46 +245,15 @@ router.put("/updateUserInfo", async (req, res) => {
     });
   } else {
   	if (authuser != req.body.userid) {
-  		return res.status(400).json({message: "You must log in as the user to update"});
+  		return res.status(401).json({message: "You must log in as the user to update"});
   	}
-    const editableFields = ["username", "useremail", "userinfo"];
-
-    let querySetString = "";
-    let querySetVariables = [];
-    let i = 1;
-
-    // This for loop checks which editable fields the user wants to update
-    for (const field in req.body) {
-      // If there is no userid passed we send back a status code 400
-      if (!editableFields.includes(field) && field != "userid" && field != "cookie") {
-        return res
-          .status(400)
-          .json({ message: "Bad request to edit an uneditable field" });
-      } else if (req.body[field].trim === "" || !req.body[field]) {
-        // validating that input sent are not empty
-        return res.status(400).json({
-          message: "Please provide valid strings as parameters",
-        });
-      } else {
-        if (field == "userid" || field == "cookie") continue;
-        // validate email
-        if (field == "useremail" && !validateEmail(req.body[field])) {
-          return res.status(400).json({
-            message: "Please provide a valid email",
-          });
-        } else {
-          const comma = i === Object.keys(req.body).length - 1 ? "" : ","; // if the current iteration is the last iteration in the loop we do not add a comma for the SET query
-          querySetString += `${field} = $${i++}${comma} `; // `$field name = value from request body `
-          querySetVariables.push(req.body[field]); // Adding variables for the query later on
-        }
-      }
-    }
-
-    querySetVariables.push(req.body.userid); // Add the userid for the WHERE condition
+  	if (!req.body.userinfo) {
+  		return res.status(400).json({message: "You must provide user info"});
+  	}
 
     client.query(
-      `UPDATE users SET ${querySetString} WHERE userid = $${i}`,
-      querySetVariables,
+      'UPDATE users SET userinfo = $1 WHERE userid = $2',
+      [req.body.userinfo, req.body.userid],
       (err, result) => {
         if (err) {
           return res.status(500).json({
