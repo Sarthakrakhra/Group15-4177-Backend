@@ -256,7 +256,7 @@ router.put("/updateUserInfo", async (req, res) => {
     // This for loop checks which editable fields the user wants to update
     for (const field in req.body) {
       // If there is no userid passed we send back a status code 400
-      if (!editableFields.includes(field) && field != "userid") {
+      if (!editableFields.includes(field) && field != "userid" && field != "cookie") {
         return res
           .status(400)
           .json({ message: "Bad request to edit an uneditable field" });
