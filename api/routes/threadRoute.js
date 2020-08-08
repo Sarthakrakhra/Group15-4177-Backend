@@ -50,6 +50,7 @@ router.post("/thread/:threadid", async (req, res) => {
 		} catch (err) {
 			return res.status(500).json({message:err.message});
 		}
+		membership = membership.rows;
 		if (!membership[0] || membership[0].memberrole == 0) {
 			return res.status(401).json({message:`You must be a member of ${forum.forumname} to view this thread`});
 		}
