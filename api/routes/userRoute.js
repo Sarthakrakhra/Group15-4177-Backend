@@ -273,7 +273,7 @@ router.put("/updateUserInfo", async (req, res) => {
   }
 });
 
-router.get("/logout", async (req, res) => {
+router.post("/logout", async (req, res) => {
   var cookieid;
   try {
     cookieid = await getCookieId(req.body.cookie);

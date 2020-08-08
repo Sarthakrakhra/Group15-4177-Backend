@@ -9,7 +9,7 @@ const userCookies = require("./../controllers/verifyUser");
 const verifyUser = userCookies.verifyUser;
 
 //Get all conversations for the current user
-router.get("/", async (req, res) => {
+router.post("/userget", async (req, res) => {
 	//Get user
 	var userid;
 	try {
@@ -32,7 +32,7 @@ router.get("/", async (req, res) => {
 });
 
 //Get conversation between current user and another user
-router.get("/user/:user", async (req, res) => {
+router.post("/userget/:user", async (req, res) => {
 	var otherid = req.params.user;
 	//Get user
 	var userid;
@@ -59,7 +59,7 @@ router.get("/user/:user", async (req, res) => {
 });
 
 //Get messages from a conversation
-router.get("/:convo", async (req, res) => {
+router.post("/:convo", async (req, res) => {
 	var convoid = req.params.convo;
 	//Get user
 	var userid;

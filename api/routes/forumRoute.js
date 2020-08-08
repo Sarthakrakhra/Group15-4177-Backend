@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
 });
 
 //Get all forums info arranged by name for current user
-router.get("/user", async (req, res) => {
+router.post("/user", async (req, res) => {
 	//Get user
 	var userid;
 	try {
@@ -44,7 +44,7 @@ router.get("/user", async (req, res) => {
 });
 
 //Get forum info and all threads in a forum, and if user is a member
-router.get("/:forumid", async (req, res) => {
+router.post("/get/:forumid", async (req, res) => {
 	var forumid = req.params.forumid;
 	//Get user
 	var userid;
@@ -133,7 +133,7 @@ router.post("/", async (req, res) => {
 });
 
 //Join a forum
-router.get("/join/:forumid", async (req, res) => {
+router.post("/join/:forumid", async (req, res) => {
 	var forumid = req.params.forumid;
 	//Get user
 	var userid;

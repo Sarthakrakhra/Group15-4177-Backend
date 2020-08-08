@@ -9,7 +9,7 @@ const userCookies = require("./../controllers/verifyUser");
 const verifyUser = userCookies.verifyUser;
 
 //Get the thread info and all comments in the thread
-router.get("/:threadid", async (req, res) => {
+router.post("/thread/:threadid", async (req, res) => {
 	var threadid = req.params.threadid;
 	//Get thread info
 	var thread;
